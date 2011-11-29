@@ -1,0 +1,13 @@
+Spam your followers/friends and get more of them with TwitterTool!
+Or a less offensive title could be:
+
+===========================================================
+ Help a twitter account to increase its social media reach
+===========================================================
+
+This is for developers:
+
+ * include TwitterTool via maven (see mvnrepo) or clone from here
+ * set your customer token + secrect in the TwitterTooling class
+ * search on the internet for some accounts you want to grab friends (or followers)
+ * ready, set, SPAM!
