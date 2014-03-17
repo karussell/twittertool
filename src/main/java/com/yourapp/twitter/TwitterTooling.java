@@ -3,7 +3,6 @@ package com.yourapp.twitter;
 import de.jetsli.twitter.AnyExecutor;
 import de.jetsli.twitter.Configuration;
 import de.jetsli.twitter.Credits;
-import de.jetsli.twitter.JUser;
 import de.jetsli.twitter.TwitterSearch;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -16,7 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import twitter4j.TwitterException;
+import twitter4j.User;
 
 /**
  * @author Peter Karich, info@jetsli.de
@@ -36,10 +35,10 @@ public class TwitterTooling {
         tt.autoUnfollow();
 
         // it is crucial to find some accounts with potential interesting users:
-        tt.autoFollow("timetabling", false);
-        tt.autoFollow("pannous", false);
-        tt.autoFollow("JetslideApp", false);
-        
+//        tt.autoFollow("timetabling", false);
+//        tt.autoFollow("pannous", false);
+//        tt.autoFollow("JetslideApp", false);
+
         // now the power spamming method: send all your followers a custom direct message!
         // tt.sendAllFollowersDM("Hey USER, we did some nice stuff!"); // USER gets replaced with the user name
     }
@@ -64,13 +63,8 @@ public class TwitterTooling {
         }
     }
 
-    public String getThisUser(TwitterSearch tw) {
-        try {
-            return tw.getUser().getScreenName();
-        } catch (TwitterException ex) {
-            logger.error("Problem when getting user name", ex);
-            throw new RuntimeException(ex);
-        }
+    public String getThisUser(TwitterSearch ts) {
+        return ts.getScreenName();
     }
     private int ignored = 0;
     private int alreadyFollowing = 0;
@@ -80,22 +74,22 @@ public class TwitterTooling {
         alreadyFollowing = 0;
         TwitterSearch twitterSearch = createTwitterSearch();
         final Set<String> friendCollection = new LinkedHashSet<String>();
-        twitterSearch.getFriends(getThisUser(twitterSearch), new AnyExecutor<JUser>() {
+        twitterSearch.getFriends(getThisUser(twitterSearch), new AnyExecutor<User>() {
 
             @Override
-            public JUser execute(JUser u) {
+            public User execute(User u) {
                 friendCollection.add(u.getScreenName().toLowerCase());
                 return u;
             }
         });
 
-        final Map<String, JUser> users = new LinkedHashMap<String, JUser>();
-        twitterSearch.getFriendsOrFollowers(userName, new AnyExecutor<JUser>() {
+        final Map<String, User> users = new LinkedHashMap<String, User>();
+        twitterSearch.getFriendsOrFollowers(userName, new AnyExecutor<User>() {
 
             int seekCounter = 0;
 
             @Override
-            public JUser execute(JUser user) {
+            public User execute(User user) {
                 float factor = ((float) user.getFollowersCount() / user.getFriendsCount());
                 // if factor is too low => probably spammy or something
                 // if factor is too high=> probably won't follow back ;)
@@ -133,7 +127,7 @@ public class TwitterTooling {
                 + friendStr + " with a 'high enough score' not too spammy or too hip");
 
         int newFollowers = 0;
-        for (JUser user : users.values()) {
+        for (User user : users.values()) {
             try {
 //                logger.info(++counter + " " + user.getScreenName() + " follower:"
 //                        + user.getFollowersCount() + " foll/friend=" + ((float) user.getFollowersCount() / user.getFriendsCount()));
@@ -160,10 +154,10 @@ public class TwitterTooling {
 
     private void autoUnfollow() throws Exception {
         TwitterSearch twitterSearch = createTwitterSearch();
-        Collection<JUser> users = twitterSearch.getFriendsNotFollowing(getThisUser(twitterSearch));
+        Collection<User> users = twitterSearch.getFriendsNotFollowing(getThisUser(twitterSearch));
         System.out.println(twitterSearch.getUser() + " friends not following:" + users.size() + " now auto unfollow. This may take a while ...");
         int success = 0;
-        for (JUser user : users) {
+        for (User user : users) {
             for (int i = 0; i < 3; i++) {
                 try {
                     Thread.sleep(300);
@@ -191,7 +185,7 @@ public class TwitterTooling {
             logger.info("minutes until reset:" + twitterSearch.getSecondsUntilReset() / 60f);
 
         try {
-            JUser u = twitterSearch.getUser();
+            User u = twitterSearch.getUser();
             logger.info("followers:" + u.getFollowersCount() + " following:" + u.getFriendsCount());
         } catch (Exception ex) {
             logger.error("getTwitterSearch", ex);
@@ -204,12 +198,12 @@ public class TwitterTooling {
      */
     public void sendAllFollowersDM(final String string) {
         final TwitterSearch twitterSearch = createTwitterSearch();
-        twitterSearch.getFollowers(getThisUser(twitterSearch), new AnyExecutor<JUser>() {
+        twitterSearch.getFollowers(getThisUser(twitterSearch), new AnyExecutor<User>() {
 
             int counter = 0;
 
             @Override
-            public JUser execute(JUser user) {
+            public User execute(User user) {
                 try {
                     String lower = user.getScreenName().toLowerCase().trim();
                     if (ignoreUsersDM.contains(lower)) {
@@ -218,7 +212,7 @@ public class TwitterTooling {
                     }
 
                     counter++;
-                    String msg = string.replaceAll("USER", user.getRealName().trim());
+                    String msg = string.replaceAll("USER", user.getName().trim());
                     System.out.println(counter + " " + user.getScreenName() + " " + msg);
                     twitterSearch.sendDMTo(lower, msg);
                     writerDM.write(lower + "\n");

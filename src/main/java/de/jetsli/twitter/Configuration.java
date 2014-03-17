@@ -33,7 +33,7 @@ public class Configuration {
     private String file;
 
     public Configuration() {
-        file = getFileUnderHome("config.properties");
+        file = getFileUnderHome("test.properties");
         if (System.getProperty(CONFIG_FILE) != null)
             file = System.getProperty(CONFIG_FILE);
 

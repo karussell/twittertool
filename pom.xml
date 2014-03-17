@@ -10,8 +10,8 @@
     <name>TwitterTool</name>
     <description>Spamming made easy - Automated Following and DMs</description>
     <properties>
-        <slf4j.version>1.6.2</slf4j.version>        
-        <tw4j.version>2.2.5</tw4j.version>                
+        <slf4j.version>1.7.6</slf4j.version>        
+        <tw4j.version>4.0.0</tw4j.version>                
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>        
     </properties>
 
@@ -39,20 +39,17 @@
             <scope>runtime</scope>
         </dependency>
         
-        <!-- use 1.2.14 instead of 1.2.16 because of
-            java.lang.NullPointerException         at org.apache.log4j.helpers.ISO8601DateFormat.format(ISO8601DateFormat.java:70)
-            -->
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <version>1.2.14</version>
+            <version>1.2.17</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.8.1</version>
+            <version>4.11</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -65,10 +62,10 @@
                 <inherited>true</inherited>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.0.2</version>
+                <version>3.1</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                     <debug>true</debug>
                 </configuration>
             </plugin>           
