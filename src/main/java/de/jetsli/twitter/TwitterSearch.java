@@ -52,7 +52,7 @@ public class TwitterSearch implements Serializable {
      * Do not use less than this limit of 20 api points for queueing searches of
      * unloggedin users
      */
-    public int limit = 50;
+    public int limit = 1;
     public final static String LINK_FILTER = "filter:links";
     private Twitter twitter;
     protected Logger logger = LoggerFactory.getLogger(TwitterSearch.class);
@@ -100,11 +100,7 @@ public class TwitterSearch implements Serializable {
             if (verify)
                 twitter.verifyCredentials();
 
-            String str = "<user>";
-            try {
-                str = twitter.getScreenName();
-            } catch (Exception ex) {
-            }
+            String str = twitter.getScreenName();
             logger.info("create new TwitterSearch for " + str + " with verifification:" + verify);
         } catch (TwitterException ex) {
 //            if (checkAndWaitIfRateLimited("initTwitter", ex))
@@ -208,6 +204,7 @@ public class TwitterSearch implements Serializable {
     }
 
     public User getUser() throws TwitterException {
+        // limit: 180
         ResponseList<Status> rl = twitter.getUserTimeline();
         return rl.get(0).getUser();
     }

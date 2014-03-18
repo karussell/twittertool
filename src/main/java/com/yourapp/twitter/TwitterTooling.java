@@ -30,12 +30,12 @@ public class TwitterTooling {
     private int MAX_USERS = 50;
 
     public static void main(String[] args) throws Exception {
-        String ignoreFile = "ignore-users.txt";
+        String ignoreFile = "my-ignore-users.txt";
         TwitterTooling tt = new TwitterTooling(ignoreFile);
-        tt.autoUnfollow();
+        // tt.autoUnfollow();
 
         // it is crucial to find some accounts with potential interesting users:
-//        tt.autoFollow("timetabling", false);
+        tt.autoFollow("GoogleMapsAPI", false);
 //        tt.autoFollow("pannous", false);
 //        tt.autoFollow("JetslideApp", false);
 
@@ -74,6 +74,7 @@ public class TwitterTooling {
         alreadyFollowing = 0;
         TwitterSearch twitterSearch = createTwitterSearch();
         final Set<String> friendCollection = new LinkedHashSet<String>();
+        logger.info("getFriends of this user");
         twitterSearch.getFriends(getThisUser(twitterSearch), new AnyExecutor<User>() {
 
             @Override
@@ -83,6 +84,7 @@ public class TwitterTooling {
             }
         });
 
+        logger.info("getFollowers of " + userName);
         final Map<String, User> users = new LinkedHashMap<String, User>();
         twitterSearch.getFriendsOrFollowers(userName, new AnyExecutor<User>() {
 
@@ -104,7 +106,7 @@ public class TwitterTooling {
                         users.put(lower, user);
                         if (users.size() >= MAX_USERS)
                             return null;
-                        else if (users.size() % 100 == 0)
+                        else if (users.size() % 10 == 0)
                             logger.info("Grabbed " + users.size() + " users ...");
                     }
                 }
@@ -173,15 +175,19 @@ public class TwitterTooling {
         logger.info("unfollowed:" + success + " of " + users.size() + " users ");
     }
 
-    private static TwitterSearch createTwitterSearch() {
+    private TwitterSearch createTwitterSearch() {
         // read into https://dev.twitter.com/apps/1041604 to get access token + secret
         // and the consumer token stuff
 
         TwitterSearch twitterSearch = new TwitterSearch();
         Credits credits = new Configuration().getTwitterSearchCredits();
         twitterSearch.setConsumer(credits.getConsumerKey(), credits.getConsumerSecret());
-        twitterSearch.initTwitter4JInstance(credits.getToken(), credits.getTokenSecret(), true);
-        if (twitterSearch.getRateLimit() < 10)
+
+        // verify costs us an API point so don't do it!
+        // twitterSearch.initTwitter4JInstance(credits.getToken(), credits.getTokenSecret(), true);
+        twitterSearch.initTwitter4JInstance(credits.getToken(), credits.getTokenSecret(), false);
+        
+        if (twitterSearch.getRateLimit() < 1)
             logger.info("minutes until reset:" + twitterSearch.getSecondsUntilReset() / 60f);
 
         try {

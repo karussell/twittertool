@@ -1,3 +1,6 @@
 *~
 target/
 deploy*sh
+test.properties
+my-ignore-users.txt
+my-ignore-users.txt.dm
